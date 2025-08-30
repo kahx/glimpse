@@ -53,7 +53,7 @@ export default function MainScreen() {
                 glimpse.
               </Text>
               <Text className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-                Your personal video moments
+                catch your moments
               </Text>
             </View>
             <Pressable

@@ -27,10 +27,27 @@ export const useVideoStore = create<VideoStore>()(
       isLoading: false,
       
       // Actions
-      addCroppedVideo: (video: CroppedVideo) => 
-        set((state) => ({
-          croppedVideos: [video, ...state.croppedVideos]
-        })),
+      addCroppedVideo: (video: CroppedVideo) => {
+        console.log('Adding cropped video to store:', video);
+        
+        // Ensure createdAt is a proper Date object before storing
+        const videoWithValidDate = {
+          ...video,
+          createdAt: video.createdAt instanceof Date ? video.createdAt : new Date(video.createdAt || Date.now())
+        };
+        
+        set((state) => {
+          const newState = {
+            croppedVideos: [videoWithValidDate, ...state.croppedVideos]
+          };
+          console.log('Updated video store state:', {
+            totalVideos: newState.croppedVideos.length,
+            newVideoId: video.id,
+            createdAt: videoWithValidDate.createdAt.toISOString()
+          });
+          return newState;
+        });
+      },
       
       updateVideo: (id: string, updates: Partial<CroppedVideo>) =>
         set((state) => ({
@@ -61,18 +78,6 @@ export const useVideoStore = create<VideoStore>()(
     {
       name: 'video-diary-storage',
       storage: createJSONStorage(() => AsyncStorage),
-      // Custom serialization for Date objects
-      serialize: (state) => JSON.stringify(state),
-      deserialize: (str) => {
-        const parsed = JSON.parse(str);
-        if (parsed.state?.croppedVideos) {
-          parsed.state.croppedVideos = parsed.state.croppedVideos.map((video: any) => ({
-            ...video,
-            createdAt: new Date(video.createdAt)
-          }));
-        }
-        return parsed;
-      }
     }
   )
 );

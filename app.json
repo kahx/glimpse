@@ -20,8 +20,12 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "package": "com.anonymous.glimpse"
     },
     "web": {
       "bundler": "metro",
@@ -44,7 +48,9 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "glimpse needs access to your photo library to select videos for your diary entries.",
+          "cameraPermission": "glimpse needs camera access to record new videos for your diary entries.",
+          "microphonePermission": "glimpse needs microphone access to record audio with your videos."
         }
       ]
     ],
