@@ -32,15 +32,28 @@ export default function DetailsPage() {
     );
   }
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit'
-    }).format(date);
+  const formatDate = (date: Date | string | number) => {
+    try {
+      // Ensure we have a valid Date object
+      const validDate = date instanceof Date ? date : new Date(date);
+      
+      // Check if the date is valid
+      if (isNaN(validDate.getTime())) {
+        return 'Invalid date';
+      }
+      
+      return new Intl.DateTimeFormat('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      }).format(validDate);
+    } catch (error) {
+      console.warn('Error formatting date in details page:', error, 'Date value:', date);
+      return 'Invalid date';
+    }
   };
 
   const handleEdit = () => {

@@ -45,6 +45,12 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+    <key>NSCameraUsageDescription</key>
+    <string>glimpse needs camera access to record new videos for your diary entries.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>glimpse needs microphone access to record audio with your videos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>glimpse needs access to your photo library to select videos for your diary entries.</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
