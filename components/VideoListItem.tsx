@@ -41,7 +41,7 @@ export function VideoListItem({ video, onPress }: VideoListItemProps) {
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center bg-white dark:bg-gray-800 p-4 mx-4 mb-3 rounded-xl shadow-sm active:scale-[0.98] transition-transform"
+      className="flex-row items-center bg-white dark:bg-gray-800 p-4 mx-4 mb-3 rounded-xl active:scale-[0.98] transition-transform"
     >
       {/* Video Thumbnail */}
       <View className="relative mr-4">
