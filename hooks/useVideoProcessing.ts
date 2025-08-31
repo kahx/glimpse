@@ -7,12 +7,14 @@ interface VideoProcessingParams {
   inputUri: string;
   startTime: number;
   endTime: number;
+  onProgress?: (progress: number) => void;
 }
 
 const processVideo = async ({ 
   inputUri, 
   startTime, 
-  endTime
+  endTime,
+  onProgress
 }: VideoProcessingParams): Promise<ProcessingResult> => {
   try {
     // Validate required parameters
@@ -51,6 +53,9 @@ const processVideo = async ({
       inputFileSize: inputFileInfo.size,
     });
 
+    // Report initial progress
+    onProgress?.(0.2); // 20% - Analysis complete
+
     const trimParams = {
       uri: inputUri,
       start: startTime, // Time in seconds
@@ -59,11 +64,22 @@ const processVideo = async ({
     
     console.log('Calling trimVideo with correct params:', trimParams);
     
+    // Report processing start
+    onProgress?.(0.3); // 30% - Processing started
+    
+    // Since expo-trim-video doesn't provide progress callbacks,
+    // we'll implement step-based progress with file monitoring
     const result = await trimVideo(trimParams);
     console.log('Video processing result:', result);
     
+    // Report processing completion
+    onProgress?.(0.8); // 80% - Video processing complete
+    
     // The function returns the output URI in result.uri
     const actualOutputUri = result.uri;
+
+    // Report verification start
+    onProgress?.(0.9); // 90% - Verifying output
 
     // Verify the output file exists using the URI returned by trimVideo
     const fileInfo = await FileSystem.getInfoAsync(actualOutputUri);
@@ -74,6 +90,9 @@ const processVideo = async ({
 
     console.log('Output file info:', fileInfo);
     console.log('Final output URI:', actualOutputUri);
+
+    // Report completion
+    onProgress?.(0.95); // 95% - File verification complete
 
     return {
       croppedVideoUri: actualOutputUri,

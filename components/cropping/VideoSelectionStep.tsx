@@ -1,8 +1,8 @@
 import { CROP_CONSTANTS, SelectedVideo } from '@/types/cropping';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import React from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
 
 interface VideoSelectionStepProps {
   onVideoSelected: (video: SelectedVideo) => void;
@@ -10,6 +10,7 @@ interface VideoSelectionStepProps {
 }
 
 export function VideoSelectionStep({ onVideoSelected, isLoading }: VideoSelectionStepProps) {
+  const [isSelectingVideo, setIsSelectingVideo] = useState(false);
   const validateVideo = (asset: ImagePicker.ImagePickerAsset): SelectedVideo | null => {
     // Check file size
     if (asset.fileSize && asset.fileSize > CROP_CONSTANTS.MAX_FILE_SIZE) {
@@ -22,10 +23,13 @@ export function VideoSelectionStep({ onVideoSelected, isLoading }: VideoSelectio
     }
 
     // Check duration (must be at least 5 seconds)
-    if (asset.duration && asset.duration < CROP_CONSTANTS.REQUIRED_DURATION) {
+    // expo-image-picker returns duration in milliseconds, convert to seconds
+    const durationInSeconds = asset.duration ? asset.duration / 1000 : 0;
+
+    if (!asset.duration || durationInSeconds < CROP_CONSTANTS.REQUIRED_DURATION) {
       Alert.alert(
         'Video Too Short',
-        'Please select a video that is at least 5 seconds long.',
+        `Please select a video that is at least ${CROP_CONSTANTS.REQUIRED_DURATION} seconds long. Your video is ${durationInSeconds.toFixed(1)} seconds.`,
         [{ text: 'OK' }]
       );
       return null;
@@ -41,18 +45,9 @@ export function VideoSelectionStep({ onVideoSelected, isLoading }: VideoSelectio
       return null;
     }
 
-    // Debug log the raw asset properties
-    console.log('Raw asset from expo-image-picker:', {
-      duration: asset.duration,
-      width: asset.width,
-      height: asset.height,
-      fileSize: asset.fileSize,
-      mimeType: asset.mimeType
-    });
-
     return {
       uri: asset.uri,
-      duration: asset.duration || 0,
+      duration: durationInSeconds, // Store duration in seconds for consistency
       width: asset.width || 0,
       height: asset.height || 0,
       fileSize: asset.fileSize || 0,
@@ -62,6 +57,8 @@ export function VideoSelectionStep({ onVideoSelected, isLoading }: VideoSelectio
 
   const selectFromGallery = async () => {
     try {
+      setIsSelectingVideo(true);
+      
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
       if (!permissionResult.granted) {
@@ -70,6 +67,7 @@ export function VideoSelectionStep({ onVideoSelected, isLoading }: VideoSelectio
           'Please allow access to your photo library to select videos.',
           [{ text: 'OK' }]
         );
+        setIsSelectingVideo(false);
         return;
       }
 
@@ -93,11 +91,15 @@ export function VideoSelectionStep({ onVideoSelected, isLoading }: VideoSelectio
         [{ text: 'OK' }]
       );
       console.error('Video selection error:', error);
+    } finally {
+      setIsSelectingVideo(false);
     }
   };
 
   const recordVideo = async () => {
     try {
+      setIsSelectingVideo(true);
+      
       const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
       
       if (!permissionResult.granted) {
@@ -106,6 +108,7 @@ export function VideoSelectionStep({ onVideoSelected, isLoading }: VideoSelectio
           'Please allow camera access to record videos.',
           [{ text: 'OK' }]
         );
+        setIsSelectingVideo(false);
         return;
       }
 
@@ -129,8 +132,12 @@ export function VideoSelectionStep({ onVideoSelected, isLoading }: VideoSelectio
         [{ text: 'OK' }]
       );
       console.error('Video recording error:', error);
+    } finally {
+      setIsSelectingVideo(false);
     }
   };
+
+  const isAnyLoading = isLoading || isSelectingVideo;
 
   return (
     <View className="flex-1 items-center justify-center px-8">
@@ -150,36 +157,53 @@ export function VideoSelectionStep({ onVideoSelected, isLoading }: VideoSelectio
         Choose a video from your gallery or record a new one. The video must be at least 5 seconds long.
       </Text>
 
-      <View className="w-full max-w-sm space-y-4">
+      {isSelectingVideo && (
+        <View className="mb-6 bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg flex-row items-center">
+          <ActivityIndicator size="small" color="#3B82F6" style={{ marginRight: 12 }} />
+          <Text className="text-blue-600 dark:text-blue-400 font-medium">
+            Processing video...
+          </Text>
+        </View>
+      )}
+
+      <View className="w-full max-w-sm space-y-4 gap-6">
         <Pressable
           onPress={selectFromGallery}
-          disabled={isLoading}
+          disabled={isAnyLoading}
           className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 disabled:bg-gray-400 p-4 rounded-xl shadow-sm flex-row items-center justify-center"
         >
-          <Ionicons 
-            name="images" 
-            size={20} 
-            color="white" 
-            style={{ marginRight: 8 }}
-          />
+          {isSelectingVideo ? (
+            <ActivityIndicator size="small" color="white" style={{ marginRight: 8 }} />
+          ) : (
+            <Ionicons 
+              name="images" 
+              size={20} 
+              color="white" 
+              style={{ marginRight: 8 }}
+            />
+          )}
           <Text className="text-white font-semibold text-base">
-            {isLoading ? 'Loading...' : 'Choose from Gallery'}
+            {isSelectingVideo ? 'Processing...' : isLoading ? 'Loading...' : 'Choose from Gallery'}
           </Text>
         </Pressable>
 
         <Pressable
           onPress={recordVideo}
-          disabled={isLoading}
+          disabled={isAnyLoading}
           className="bg-gray-600 hover:bg-gray-700 active:bg-gray-800 disabled:bg-gray-400 p-4 rounded-xl shadow-sm flex-row items-center justify-center"
         >
-          <Ionicons 
-            name="camera" 
-            size={20} 
-            color="white" 
-            style={{ marginRight: 8 }}
-          />
+          {isSelectingVideo ? (
+            <ActivityIndicator size="small" color="white" style={{ marginRight: 8 }} />
+          ) : (
+            <Ionicons 
+              name="camera" 
+              size={20} 
+              color="white" 
+              style={{ marginRight: 8 }}
+            />
+          )}
           <Text className="text-white font-semibold text-base">
-            {isLoading ? 'Loading...' : 'Record New Video'}
+            {isSelectingVideo ? 'Processing...' : isLoading ? 'Loading...' : 'Record New Video'}
           </Text>
         </Pressable>
       </View>

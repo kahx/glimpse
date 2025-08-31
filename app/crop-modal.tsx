@@ -58,29 +58,25 @@ export default function CropModal() {
     setCurrentStep('processing');
     setProcessingProgress(0);
 
-    // Simulate processing progress
-    const progressInterval = setInterval(() => {
-      setProcessingProgress(prev => {
-        if (prev >= 0.9) {
-          clearInterval(progressInterval);
-          return prev;
-        }
-        return prev + 0.1;
-      });
-    }, 500);
-
     try {
+      // Set initial progress states
+      setProcessingProgress(0.1); // Started processing
+      
       const processingParams = {
         inputUri: selectedVideo.uri,
         startTime: cropSelection.startTime,
-        endTime: cropSelection.endTime
+        endTime: cropSelection.endTime,
+        onProgress: (progress: number) => {
+          // Real progress callback from video processing
+          setProcessingProgress(Math.min(progress, 0.95)); // Cap at 95% until complete
+        }
       };
       
       console.log('Calling video processing with params:', processingParams);
       
       const result = await videoProcessing.mutateAsync(processingParams);
 
-      clearInterval(progressInterval);
+      // Final completion
       setProcessingProgress(1);
 
       if (result.success && result.croppedVideoUri) {
@@ -107,7 +103,7 @@ export default function CropModal() {
 
         // Add to store
         console.log('About to add video to store...');
-        addCroppedVideo(croppedVideo);
+        await addCroppedVideo(croppedVideo);
         console.log('Video added to store successfully');
 
         // Show success and navigate back after delay
@@ -119,8 +115,9 @@ export default function CropModal() {
         throw new Error(result.error || 'Video processing failed');
       }
     } catch (error) {
-      clearInterval(progressInterval);
       console.error('Video processing error:', error);
+      // Reset progress on error
+      setProcessingProgress(0);
       // The error will be shown in VideoProcessingStep via videoProcessing.error
     }
   };

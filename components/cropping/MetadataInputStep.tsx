@@ -1,6 +1,6 @@
 import { CropSelection, SelectedVideo, VideoMetadataForm, VideoMetadataSchema } from '@/types/cropping';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 interface MetadataInputStepProps {
@@ -22,6 +22,9 @@ export function MetadataInputStep({
   const [description, setDescription] = useState('');
   const [errors, setErrors] = useState<Partial<VideoMetadataForm>>({});
   const [touched, setTouched] = useState({ name: false, description: false });
+  
+  // Refs for TextInput components
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const validateField = (fieldName: keyof VideoMetadataForm, value: string) => {
     try {
@@ -62,6 +65,22 @@ export function MetadataInputStep({
     validateField('description', description);
   };
 
+  const handleNameFocus = () => {
+    // Scroll to make name input visible when keyboard appears
+    setTimeout(() => {
+      scrollViewRef.current?.scrollTo({ y: 150, animated: true });
+    }, 100);
+  };
+
+  const handleDescriptionFocus = () => {
+    // Scroll to make description input visible when keyboard appears
+    setTimeout(() => {
+      scrollViewRef.current?.scrollTo({ y: 300, animated: true });
+    }, 100);
+  };
+
+
+
   const handleSubmit = () => {
     // Validate all fields
     const metadata = { name: name.trim(), description: description.trim() };
@@ -97,12 +116,16 @@ export function MetadataInputStep({
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       className="flex-1 bg-gray-50 dark:bg-gray-900"
+      style={{ flex: 1 }}
     >
       <ScrollView 
+        ref={scrollViewRef}
         className="flex-1"
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <View className="flex-1 p-6">
           {/* Header */}
@@ -165,6 +188,7 @@ export function MetadataInputStep({
                 value={name}
                 onChangeText={handleNameChange}
                 onBlur={handleNameBlur}
+                onFocus={handleNameFocus}
                 placeholder="Enter a name for your video diary entry"
                 placeholderTextColor="#9CA3AF"
                 className={`bg-white dark:bg-gray-800 border-2 rounded-xl p-4 text-gray-900 dark:text-white ${
@@ -193,6 +217,7 @@ export function MetadataInputStep({
                 value={description}
                 onChangeText={handleDescriptionChange}
                 onBlur={handleDescriptionBlur}
+                onFocus={handleDescriptionFocus}
                 placeholder="Add a description (optional)"
                 placeholderTextColor="#9CA3AF"
                 className={`bg-white dark:bg-gray-800 border-2 rounded-xl p-4 text-gray-900 dark:text-white ${
@@ -217,7 +242,7 @@ export function MetadataInputStep({
           </View>
 
           {/* Action Buttons */}
-          <View className="mt-8 space-y-4">
+          <View className="my-8 space-y-4 gap-6">
             <Pressable
               onPress={handleSubmit}
               disabled={!isFormValid || isLoading}

@@ -2,11 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withRepeat,
-    withTiming
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming
 } from 'react-native-reanimated';
 
 interface VideoProcessingStepProps {
@@ -52,7 +52,7 @@ export function VideoProcessingStep({
       rotation.value = 0;
       scale.value = 1;
     }
-  }, [isProcessing]);
+  }, [isProcessing, rotation, scale]);
 
   const animatedIconStyle = useAnimatedStyle(() => ({
     transform: [
@@ -159,7 +159,7 @@ export function VideoProcessingStep({
       </Text>
       
       <Text className="text-gray-600 dark:text-gray-400 text-center text-base leading-6 mb-8">
-        We're cropping your video and preparing your diary entry. This may take a moment...
+        We&apos;re cropping your video and preparing your diary entry. This may take a moment...
       </Text>
 
       {/* Progress Bar */}
@@ -183,17 +183,17 @@ export function VideoProcessingStep({
         
         <View className="space-y-3">
           <ProcessingStep 
-            label="Cropping video segment"
-            isActive={progress < 0.5}
-            isComplete={progress >= 0.5}
+            label="Analyzing video file"
+            isActive={progress < 0.2}
+            isComplete={progress >= 0.2}
           />
           <ProcessingStep 
-            label="Optimizing video quality"
-            isActive={progress >= 0.5 && progress < 0.8}
+            label="Cropping video segment"
+            isActive={progress >= 0.2 && progress < 0.8}
             isComplete={progress >= 0.8}
           />
           <ProcessingStep 
-            label="Saving to your diary"
+            label="Verifying and saving"
             isActive={progress >= 0.8 && progress < 1}
             isComplete={progress >= 1}
           />
