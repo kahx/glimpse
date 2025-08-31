@@ -143,7 +143,7 @@ export function MetadataInputStep({
             </Text>
             
             <Text className="text-gray-600 dark:text-gray-400 text-center text-base">
-              Give your video diary entry a name and description
+              Give your moment a name and description
             </Text>
           </View>
 
@@ -189,7 +189,7 @@ export function MetadataInputStep({
                 onChangeText={handleNameChange}
                 onBlur={handleNameBlur}
                 onFocus={handleNameFocus}
-                placeholder="Enter a name for your video diary entry"
+                placeholder="Enter a name for your moment"
                 placeholderTextColor="#9CA3AF"
                 className={`bg-white dark:bg-gray-800 border-2 rounded-xl p-4 text-gray-900 dark:text-white ${
                   errors.name ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
@@ -253,7 +253,7 @@ export function MetadataInputStep({
               }`}
             >
               <Text className="text-white font-semibold text-base text-center">
-                {isLoading ? 'Processing Video...' : 'Create Video Diary Entry'}
+                {isLoading ? 'Processing Video...' : 'Create Moment'}
               </Text>
             </Pressable>
             

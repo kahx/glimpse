@@ -95,6 +95,8 @@ PODS:
     - ExpoModulesCore
   - ExpoVideo (2.2.2):
     - ExpoModulesCore
+  - ExpoVideoThumbnails (9.1.3):
+    - ExpoModulesCore
   - ExpoWebBrowser (14.2.0):
     - ExpoModulesCore
   - fast_float (6.1.4)
@@ -2150,6 +2152,7 @@ DEPENDENCIES:
   - ExpoSystemUI (from `../node_modules/expo-system-ui/ios`)
   - ExpoTrimVideo (from `../node_modules/expo-trim-video/ios`)
   - ExpoVideo (from `../node_modules/expo-video/ios`)
+  - ExpoVideoThumbnails (from `../node_modules/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - fast_float (from `../node_modules/react-native/third-party-podspecs/fast_float.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -2285,6 +2288,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-trim-video/ios"
   ExpoVideo:
     :path: "../node_modules/expo-video/ios"
+  ExpoVideoThumbnails:
+    :path: "../node_modules/expo-video-thumbnails/ios"
   ExpoWebBrowser:
     :path: "../node_modules/expo-web-browser/ios"
   fast_float:
@@ -2462,6 +2467,7 @@ SPEC CHECKSUMS:
   ExpoSystemUI: 433a971503b99020318518ed30a58204288bab2d
   ExpoTrimVideo: edbf7f15e4a03e54aedf654521a1d79a7d3a26d8
   ExpoVideo: ada534976cfd4a6bf082cc61aa1b17920a251e32
+  ExpoVideoThumbnails: ef1a4c7bff9ab3b4e006ce17576c3f09320b4cf4
   ExpoWebBrowser: dc39a88485f007e61a3dff05d6a75f22ab4a2e92
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: d2a9cd223302b6c9aa4aa34c1a775e9db609eb52

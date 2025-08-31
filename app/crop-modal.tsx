@@ -102,9 +102,7 @@ export default function CropModal() {
         });
 
         // Add to store
-        console.log('About to add video to store...');
         await addCroppedVideo(croppedVideo);
-        console.log('Video added to store successfully');
 
         // Show success and navigate back after delay
         setTimeout(() => {
@@ -118,7 +116,6 @@ export default function CropModal() {
       console.error('Video processing error:', error);
       // Reset progress on error
       setProcessingProgress(0);
-      // The error will be shown in VideoProcessingStep via videoProcessing.error
     }
   };
 
@@ -173,7 +170,7 @@ export default function CropModal() {
       case 'cropping': return 'Crop Video';
       case 'metadata': return 'Add Details';
       case 'processing': return 'Processing';
-      default: return 'Create Video Diary Entry';
+      default: return 'Create New Moment';
     }
   };
 
