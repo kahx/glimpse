@@ -2,6 +2,7 @@ import { ProcessingResult } from '@/types/cropping';
 import { useMutation } from '@tanstack/react-query';
 import * as FileSystem from 'expo-file-system';
 import { trimVideo } from 'expo-trim-video';
+import * as VideoThumbnails from 'expo-video-thumbnails';
 
 interface VideoProcessingParams {
   inputUri: string;
@@ -91,11 +92,33 @@ const processVideo = async ({
     console.log('Output file info:', fileInfo);
     console.log('Final output URI:', actualOutputUri);
 
+    // Generate thumbnail from the processed video
+    onProgress?.(0.95); // 95% - Generating thumbnail
+    let thumbnailUri: string | undefined;
+    
+    try {
+      // Generate thumbnail from the middle of the processed video
+      const videoDuration = endTime - startTime;
+      const thumbnailTime = videoDuration / 2 * 1000; // Convert to milliseconds, get middle of video
+      
+      const thumbnailResult = await VideoThumbnails.getThumbnailAsync(actualOutputUri, {
+        time: thumbnailTime,
+        quality: 0.8, // High quality thumbnail
+      });
+      
+      thumbnailUri = thumbnailResult.uri;
+      console.log('Generated thumbnail:', thumbnailUri);
+    } catch (thumbnailError) {
+      console.warn('Failed to generate thumbnail:', thumbnailError);
+      // Continue without thumbnail - not a critical error
+    }
+
     // Report completion
-    onProgress?.(0.95); // 95% - File verification complete
+    onProgress?.(1.0); // 100% - Complete
 
     return {
       croppedVideoUri: actualOutputUri,
+      thumbnail: thumbnailUri,
       success: true,
     };
   } catch (error) {

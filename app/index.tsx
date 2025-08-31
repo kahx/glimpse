@@ -66,7 +66,7 @@ export default function MainScreen() {
             <Text className="text-gray-600 dark:text-gray-400 text-sm mt-1">
               {croppedVideos.length === 0 
                 ? 'catch your moments' 
-                : `${croppedVideos.length} ${croppedVideos.length === 1 ? 'entry' : 'entries'}`
+                : `${croppedVideos.length} ${croppedVideos.length === 1 ? 'moment' : 'moments'}`
               }
             </Text>
           </View>

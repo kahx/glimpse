@@ -1,8 +1,7 @@
 import { CroppedVideo } from '@/types/video';
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 
 interface VideoListItemProps {
   video: CroppedVideo;
@@ -33,11 +32,6 @@ export function VideoListItem({ video, onPress }: VideoListItemProps) {
     }
   };
 
-  const formatDuration = () => {
-    const duration = video.endTime - video.startTime;
-    return `${duration.toFixed(1)}s`;
-  };
-
   return (
     <Pressable
       onPress={onPress}
@@ -47,9 +41,12 @@ export function VideoListItem({ video, onPress }: VideoListItemProps) {
       <View className="relative mr-4">
         {video.thumbnail ? (
           <Image
-            source={{ uri: video.thumbnail }}
             className="w-16 h-16 rounded-lg bg-gray-200 dark:bg-gray-700"
-            contentFit="cover"
+            source={{ uri: video.thumbnail }}
+            resizeMode="cover"
+            onError={(error) => {
+              console.error('Image load error for video', video.id, ':', error);
+            }}
           />
         ) : (
           <View className="w-16 h-16 rounded-lg bg-gray-200 dark:bg-gray-700 items-center justify-center">
@@ -60,13 +57,6 @@ export function VideoListItem({ video, onPress }: VideoListItemProps) {
             />
           </View>
         )}
-        
-        {/* Duration Badge */}
-        <View className="absolute bottom-1 right-1 bg-black/70 px-1.5 py-0.5 rounded">
-          <Text className="text-white text-xs font-medium">
-            {formatDuration()}
-          </Text>
-        </View>
         
         {/* Play Icon Overlay */}
         <View className="absolute inset-0 items-center justify-center">

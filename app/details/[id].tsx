@@ -1,17 +1,73 @@
 import { useVideoStore } from '@/store/videoStore';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { VideoView } from 'expo-video';
-import React from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { VideoView, useVideoPlayer } from 'expo-video';
+import React, { useCallback, useState } from 'react';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function DetailsPage() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getVideoById } = useVideoStore();
+  const { getVideoById, deleteVideo } = useVideoStore();
+  
+  const [isLoading, setIsLoading] = useState(false);
   
   const video = getVideoById(id!);
+  
+  // Create video player for the cropped video
+  const player = useVideoPlayer(video?.croppedVideoUri || '', player => {
+    player.loop = true;
+    player.pause(); // Start paused
+  });
+
+  // Delete function
+  const handleDelete = useCallback(async () => {
+    if (!video) return;
+
+    Alert.alert(
+      'Delete Moment',
+      `Are you sure you want to delete "${video.name}"? This action cannot be undone.`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            setIsLoading(true);
+            try {
+              await deleteVideo(video.id);
+              Alert.alert(
+                'Deleted',
+                'Moment has been deleted successfully.',
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => {
+                      // Navigate back to main screen
+                      router.replace('/');
+                    }
+                  }
+                ]
+              );
+            } catch (error) {
+              console.error('Failed to delete video:', error);
+              Alert.alert(
+                'Error',
+                'Failed to delete moment. Please try again.',
+                [{ text: 'OK' }]
+              );
+            } finally {
+              setIsLoading(false);
+            }
+          }
+        }
+      ]
+    );
+  }, [video, deleteVideo]);
 
   if (!video) {
     return (
@@ -97,10 +153,9 @@ export default function DetailsPage() {
         <View className="bg-black mx-4 mt-6 rounded-xl overflow-hidden">
           <VideoView
             style={{ width: '100%', aspectRatio: 16/9 }}
-            source={{ uri: video.croppedVideoUri }}
-            useNativeControls
-            shouldPlay={false}
-            isLooping
+            player={player}
+            nativeControls
+            allowsFullscreen
           />
         </View>
 
@@ -126,34 +181,30 @@ export default function DetailsPage() {
             </View>
           )}
 
-          {/* Video Details */}
-          <View className="bg-white dark:bg-gray-800 rounded-xl p-4">
-            <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Video Details
+          {/* Delete Button */}
+          <View className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <Pressable
+              onPress={handleDelete}
+              disabled={isLoading}
+              className={`py-3 rounded-lg border-2 border-red-500 ${
+                isLoading ? 'opacity-50' : 'bg-red-50 dark:bg-red-900/20'
+              }`}
+            >
+              <View className="flex-row items-center justify-center">
+                <Ionicons 
+                  name="trash-outline" 
+                  size={20} 
+                  color="#EF4444" 
+                  style={{ marginRight: 8 }}
+                />
+                <Text className="text-red-500 font-semibold text-center">
+                  {isLoading ? 'Deleting...' : 'Delete Moment'}
+                </Text>
+              </View>
+            </Pressable>
+            <Text className="text-gray-500 dark:text-gray-400 text-xs text-center mt-2">
+              This action cannot be undone
             </Text>
-            
-            <View className="space-y-3">
-              <View className="flex-row justify-between items-center">
-                <Text className="text-gray-600 dark:text-gray-400">Duration</Text>
-                <Text className="text-gray-900 dark:text-white font-medium">
-                  {(video.endTime - video.startTime).toFixed(1)}s
-                </Text>
-              </View>
-              
-              <View className="flex-row justify-between items-center">
-                <Text className="text-gray-600 dark:text-gray-400">Start Time</Text>
-                <Text className="text-gray-900 dark:text-white font-medium">
-                  {video.startTime.toFixed(1)}s
-                </Text>
-              </View>
-              
-              <View className="flex-row justify-between items-center">
-                <Text className="text-gray-600 dark:text-gray-400">End Time</Text>
-                <Text className="text-gray-900 dark:text-white font-medium">
-                  {video.endTime.toFixed(1)}s
-                </Text>
-              </View>
-            </View>
           </View>
         </View>
       </ScrollView>

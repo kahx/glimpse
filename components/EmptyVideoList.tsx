@@ -18,11 +18,11 @@ export function EmptyVideoList({ onAddPress }: EmptyVideoListProps) {
       </View>
       
       <Text className="text-gray-900 dark:text-white text-xl font-semibold text-center mb-3">
-        No video diary entries yet
+        No moments yet
       </Text>
       
       <Text className="text-gray-600 dark:text-gray-400 text-center text-base leading-6 mb-8">
-        Create your first video diary entry by importing a video and cropping a 5-second moment.
+        Create your first moment by importing a video.
       </Text>
       
       <Pressable
@@ -30,7 +30,7 @@ export function EmptyVideoList({ onAddPress }: EmptyVideoListProps) {
           className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 px-6 py-3 rounded-full shadow-sm"
         >
           <Text className="text-white font-semibold text-base">
-            Add Your First Entry
+            Add Your First Moment
           </Text>
         </Pressable>
     </View>

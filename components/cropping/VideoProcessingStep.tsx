@@ -127,7 +127,7 @@ export function VideoProcessingStep({
         </Text>
         
         <Text className="text-gray-600 dark:text-gray-400 text-center text-base leading-6 mb-8">
-          Your video diary entry has been successfully created and saved.
+          Your moment has been successfully created and saved.
         </Text>
         
         <View className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
@@ -159,7 +159,7 @@ export function VideoProcessingStep({
       </Text>
       
       <Text className="text-gray-600 dark:text-gray-400 text-center text-base leading-6 mb-8">
-        We&apos;re cropping your video and preparing your diary entry. This may take a moment...
+        We&apos;re cropping your video and preparing your moment. This may take a moment...
       </Text>
 
       {/* Progress Bar */}
